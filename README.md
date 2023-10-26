@@ -1,15 +1,9 @@
-# ping_sonar_ros
-
-[![GitHub stars](https://img.shields.io/github/stars/tasada038/ping_sonar_ros.svg?style=social&label=Star&maxAge=2592000)](https://github.com/tasada038/ping_sonar_ros/stargazers/)
-[![GitHub forks](https://img.shields.io/github/forks/tasada038/ping_sonar_ros.svg?style=social&label=Fork&maxAge=2592000)](https://github.com/tasada038/ping_sonar_ros/network/)
-[![GitHub issues](https://img.shields.io/github/issues/tasada038/ping_sonar_ros.svg)](https://github.com/tasada038/ping_sonar_ros/issues/)
-[![GitHub license](https://img.shields.io/github/license/tasada038/ping_sonar_ros.svg)](https://github.com/tasada038/ping_sonar_ros/blob/master/LICENSE)
 
 ## Overview
 
 ROS 2 package for Blue Robotics Ping Sonar Altimeter and Echosounder
+That's modified for U-CAT usage and it is folk from https://github.com/tasada038/ping_sonar_ros
 
-**Keywords:** ROS 2, ping sonar
 
 ### License
 
@@ -18,31 +12,17 @@ The source code is released under a [MIT license](LICENSE).
 ## Requirements
 [Ping Sonar Altimeter and Echosounder](https://bluerobotics.com/store/sensors-sonars-cameras/sonar/ping-sonar-r2-rp/)
 
-## Installation
-
-Clone with `--recursive` in order to get the necessary `ping-python` library:
-
 ```
-cd dev_ws/src
-git clone -b master --recursive https://github.com/tasada038/ping_sonar_ros.git
-cd ~/dev_ws
-colcon build --packages-select ping_sonar_ros
+$ pip install --user bluerobotics-ping --upgrade
+$ pip install pyserial
 ```
+
 
 ## Run
 Publish sonar data
 ```
-. install/setup.bash
 ros2 run ping_sonar_ros ping1d_node
 ```
-
-Publish sonar data using Rviz2
-```
-. install/setup.bash
-ros2 launch ping_sonar_ros ping_sonar.launch.py
-```
-
-![ping1d_rviz_img](img/ping1d_rviz.png)
 
 ## Ping sonar Topics
 The topics of the ping_sonar_ros are as follows.
@@ -82,9 +62,3 @@ $ ros2 param list
 - scan_lenght range is [2000 - 10000] (int ms). Blue Robotics Inc. default is 2000 mm.
 - scan_start range is [30 - 200]. Blue Robotics Inc. default is 100 mm.
 - scan_start range is [1050000 - 1550000] (int mm/s).
-
-## License
-This action is licensed under the MIT License. This project is originally created by [Blue Robotics](https://github.com/bluerobotics), and maintained continuously by Takumi Asada.
-
-Projects in .gitmodules files are covered by Blue Robotics Inc's MIT License.
-Other software components are licensed under this project's license.
