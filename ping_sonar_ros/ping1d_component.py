@@ -14,7 +14,8 @@ class Ping1dComponent(Node):
   def __init__(self):
     super().__init__("ping1d_node")
     self.publisher_ = self.create_publisher(Range, "/ping1d/range", 10)
-    self.dist_pub_ = self.create_publisher(Float32, "/ping1d/data", 10)
+    self.dist_pub_ = self.create_publisher(Float32, "/ping1d/distance", 10)
+    self.confidence_pub_ = self.create_publisher(Float32, "/ping1d/confidence", 10)
     self.speed_pub_ = self.create_publisher(Float32, "/ping1d/param/speed", 10)
     self.interval_pub_ = self.create_publisher(Float32, "/ping1d/param/interval", 10)
     self.gain_pub_ = self.create_publisher(Float32, "/ping1d/param/gain", 10)
@@ -26,7 +27,7 @@ class Ping1dComponent(Node):
     self.speed_:float = self.get_parameter('speed').value
     self.declare_parameter('interval_num', 100)
     self.interval_num_:float = self.get_parameter('interval_num').value
-    self.declare_parameter('gain_num', 1) # int 0 - 6
+    self.declare_parameter('gain_num', 2) # int 0 - 6
     self.gain_num_:int = self.get_parameter('gain_num').value
     self.declare_parameter('scan_start', 100) # default 100 [mm] range(30 to 200)
     self.scan_start_:float = self.get_parameter('scan_start').value
@@ -69,7 +70,7 @@ class Ping1dComponent(Node):
 
     # distance: Units: mm; Distance to the target.\n
     # confidence: Units: %; Confidence in the distance measurement.\n
-    simple_data = self.ping.get_distance_simple()
+    simple_data = self.ping.get_distance()
     # print("simple data:%d\n", simple_data)
 
     # scan_start: Units: mm; The beginning of the scan range in mm from the transducer.\n
@@ -113,14 +114,15 @@ class Ping1dComponent(Node):
     range_msg.max_range = float(range_data["scan_length"]/1000) # [m]
     range_msg.range = float(simple_data["distance"]/1000) # [m]
     self.publisher_.publish(range_msg)
-    self.get_logger().info("Publishing range: {}".format(range_msg.range))
 
     dist_msg = Float32()
+    conf_msg = Float32()
     speed_msg = Float32()
     interval_msg = Float32()
     gain_msg = Float32()
     mode_msg = Float32()
     dist_msg.data = float(simple_data["distance"]/1000)
+    conf_msg.data = float(simple_data["confidence"])
     speed_msg.data = float(speed_sound["speed_of_sound"]/1000)
     interval_msg.data = float(interval["ping_interval"])
     gain_msg.data = float(gain["gain_setting"])
@@ -130,6 +132,8 @@ class Ping1dComponent(Node):
     self.interval_pub_.publish(interval_msg)
     self.gain_pub_.publish(gain_msg)
     self.mode_pub_.publish(mode_msg)
+    self.get_logger().info("Distance: {}".format(range_msg.range))
+    self.get_logger().info("Confidence: {}".format(conf_msg.data))
 
   def set_param_callback(self, params):
         result = SetParametersResult(successful=True)
