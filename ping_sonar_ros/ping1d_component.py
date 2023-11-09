@@ -4,10 +4,10 @@ from std_msgs.msg import Float32
 
 from rcl_interfaces.msg import SetParametersResult
 
-# from brping import Ping1D
-import importlib
-module_name = "ping_sonar_ros.ping-python.brping.ping1d"
-module = importlib.import_module(module_name)
+from brping import Ping1D
+#import importlib
+#module_name = "ping_sonar_ros.ping-python.brping.ping1d"
+#module = importlib.import_module(module_name)
 
 
 class Ping1dComponent(Node):
@@ -41,7 +41,7 @@ class Ping1dComponent(Node):
     ### Make a new Ping
     self.port = "/dev/ttyUSB0"
     self.baudrate = 115200
-    self.ping = module.Ping1D()
+    self.ping = Ping1D()
     self.ping.connect_serial(self.port, self.baudrate)
 
     if self.ping.initialize() is False:
