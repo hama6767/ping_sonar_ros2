@@ -1,13 +1,15 @@
+import time
+
 from rclpy.node import Node
 from sensor_msgs.msg import Range
 from std_msgs.msg import Float32
 
 from rcl_interfaces.msg import SetParametersResult
 
-# from brping import Ping1D
-import importlib
-module_name = "ping_sonar_ros.ping-python.brping.ping1d"
-module = importlib.import_module(module_name)
+from brping import Ping1D
+#import importlib
+#module_name = "ping_sonar_ros.ping-python.brping.ping1d"
+#module = importlib.import_module(module_name)
 
 
 class Ping1dComponent(Node):
@@ -38,16 +40,13 @@ class Ping1dComponent(Node):
 
     self.param_handler_ptr_ = self.add_on_set_parameters_callback(self.set_param_callback)
 
-    ### Make a new Ping
-    self.port = "/dev/ttyUSB0"
-    self.baudrate = 115200
-    self.ping = module.Ping1D()
-    self.ping.connect_serial(self.port, self.baudrate)
-
-    if self.ping.initialize() is False:
+    self.init_ping()
+    while self.ping.initialize() is False:
       print("Failed to initialize Ping!")
-      exit(1)
+      self.init_ping()
+      time.sleep(1)
 
+    print("connection success")
     ### Set Initial parameter
     # self.id = self.ping.get_device_id()
     self.ping.set_speed_of_sound(self.speed_)
@@ -55,6 +54,14 @@ class Ping1dComponent(Node):
     self.ping.set_gain_setting(self.gain_num_)
     self.ping.set_range(self.scan_start_, self.scan_lenght_)
     self.ping.set_mode_auto(self.mode_auto_)
+
+  def init_ping(self):
+    ### Make a new Ping
+    self.port = "/dev/ttyUSBping"
+    self.baudrate = 115200
+    self.ping = Ping1D()
+    self.ping.connect_serial(self.port, self.baudrate)
+
 
   def range_callback(self):
     # distance: Units: mm; The current return distance determined for the most recent acoustic measurement.\n
@@ -132,8 +139,8 @@ class Ping1dComponent(Node):
     self.interval_pub_.publish(interval_msg)
     self.gain_pub_.publish(gain_msg)
     self.mode_pub_.publish(mode_msg)
-    self.get_logger().info("Distance: {}".format(range_msg.range))
-    self.get_logger().info("Confidence: {}".format(conf_msg.data))
+    #self.get_logger().info("Distance: {}".format(range_msg.range))
+    #self.get_logger().info("Confidence: {}".format(conf_msg.data))
 
   def set_param_callback(self, params):
         result = SetParametersResult(successful=True)
