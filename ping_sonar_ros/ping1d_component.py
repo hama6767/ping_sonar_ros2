@@ -40,8 +40,18 @@ class Ping1dComponent(Node):
 
     self.param_handler_ptr_ = self.add_on_set_parameters_callback(self.set_param_callback)
 
+<<<<<<< HEAD
     self.init_ping()
     while self.ping.initialize() is False:
+=======
+    ### Make a new Ping
+    self.port = "/dev/ttyUSB0"
+    self.baudrate = 115200
+    self.ping = Ping1D()
+    self.ping.connect_serial(self.port, self.baudrate)
+
+    if self.ping.initialize() is False:
+>>>>>>> 75ee5e33e5da32112a2c11e0347784e7f4601e06
       print("Failed to initialize Ping!")
       self.init_ping()
       time.sleep(1)
